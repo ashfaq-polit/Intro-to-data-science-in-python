@@ -1,0 +1,87 @@
+import pandas as pd
+
+df = pd.read_csv('olympics.csv', index_col=0, skiprows=1)
+
+for col in df.columns:
+    if col[:2]=='01':
+        df.rename(columns={col:'Gold'+col[4:]}, inplace=True)
+    if col[:2]=='02':
+        df.rename(columns={col:'Silver'+col[4:]}, inplace=True)
+    if col[:2]=='03':
+        df.rename(columns={col:'Bronze'+col[4:]}, inplace=True)
+    if col[:1]=='№':
+        df.rename(columns={col:'#'+col[1:]}, inplace=True)
+
+names_ids = df.index.str.split('\s\(') # split the index by '('
+
+df.index = names_ids.str[0] # the [0] element is the country name (new index) 
+df['ID'] = names_ids.str[1].str[:3] # the [1] element is the abbreviation or ID (take first 3 characters from that)
+
+df = df.drop('Totals')
+df.head()
+
+def answer_one():
+    return df['Gold'].idxmax()
+answer_one()
+
+def answer_two():
+    return (df['Gold'] - df['Gold.1']).abs().idxmax()
+answer_two()
+
+def answer_three():
+    df_more = df[(df['Gold']>=1) & (df['Gold.1']) >=1]
+    return (((df_more['Gold'])-(df_more['Gold.1']))/df_more['Gold.2']).abs().argmax()
+answer_three()
+
+def answer_four():
+    Points = df['Gold.2']*3 + df['Silver.2']*2 + df['Bronze.2']*1
+    return Points
+answer_four()
+
+def answer_five():
+    max_county = census_df['STNAME'].value_counts()
+    type(max_county)
+    return max_county.index[0]
+answer_five()
+
+def answer_six():
+    import numpy as np
+    state = census_df['STNAME'].unique()
+    state
+    len(state)
+
+    A=[]
+    for i in range(len(state)):
+        select_state = census_df.loc[census_df['STNAME'] == state[i]] 
+        top_three = select_state.sort(['CENSUS2010POP'], ascending=[ False]).head(3).sum()
+        top_three['CENSUS2010POP']
+        A.append(top_three['CENSUS2010POP'])
+
+    pd.Series(A)
+    ind = A.index(max(A))
+
+    return state[ind]
+answer_six()
+
+def answer_seven():
+    county_only = census_df[census_df['SUMLEV']==50].set_index('CTYNAME')
+    years = ['POPESTIMATE2010','POPESTIMATE2011','POPESTIMATE2012','POPESTIMATE2013','POPESTIMATE2014','POPESTIMATE2015']
+    return (county_only.loc[:, years].max(axis=1) - county_only.loc[:, years].min(axis=1)).argmax()
+answer_seven()
+
+def answer_eight():
+
+  
+    A = census_df[census_df['CTYNAME'].str.startswith("Washington")]
+    A
+
+    B = A[(A['REGION'] == 2) | (A['REGION'] == 1)]
+    B
+
+    C = B[(B['POPESTIMATE2015']-B['POPESTIMATE2014'])>0]
+    C
+
+    return C[['STNAME','CTYNAME']]
+
+answer_eight()
+
