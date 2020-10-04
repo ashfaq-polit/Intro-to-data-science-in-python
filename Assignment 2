@@ -72,21 +72,13 @@ answer_five()
 
 def answer_six():
     import numpy as np
-    state = census_df['STNAME'].unique()
-    state
-    len(state)
+    
+    #https://stackoverflow.com/questions/56943216/pandas-how-to-sum-the-largest-3-values-with-respect-to-a-sub-level-in-multileve
+    census_top = census_df.groupby('STNAME').CENSUS2010POP.nlargest(3).sum(level=0).sort_values(ascending=False)
+   
+   #https://stackoverflow.com/questions/41273005/how-to-get-the-index-of-ith-item-in-pandas-series
+   return census_top.index[0:3] 
 
-    A=[]
-    for i in range(len(state)):
-        select_state = census_df.loc[census_df['STNAME'] == state[i]] 
-        top_three = select_state.sort(['CENSUS2010POP'], ascending=[ False]).head(3).sum()
-        top_three['CENSUS2010POP']
-        A.append(top_three['CENSUS2010POP'])
-
-    pd.Series(A)
-    ind = A.index(max(A))
-
-    return state[ind]
 answer_six()
 
 #Which county has had the largest absolute change in population within the period 2010-2015? (Hint: population values are stored in columns POPESTIMATE2010 through POPESTIMATE2015, you need to consider all six columns.)
