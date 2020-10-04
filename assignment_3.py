@@ -187,6 +187,10 @@ continent_table = new.groupby('Continent')['population_estimate'].agg({'Size':np
 #This function should return a Series with a MultiIndex of Continent, then the bins for % Renewable. Do not include groups with no countries.
 
 bins = pd.cut(new['% Renewable'],5)
+bins = bins.reset_index()
+bins.columns = ['Country','% Renewable']
+bins['Continent']= bins['Country'].map(ContinentDict) 
+bins = bins.set_index(['Continent','Country'])
 
 #Convert the Population Estimate series to a string with thousands separator (using commas). Do not round the results.
 #e.g. 317615384.61538464 -> 317,615,384.61538464
